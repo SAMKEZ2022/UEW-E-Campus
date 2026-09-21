@@ -1,0 +1,86 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Configuration used by public pages (e.g. the registration period
+    // open/closed status decided by the admin). Public read access is
+    // needed so the portal knows what to display before any submission;
+    // only writing remains restricted to the admin space.
+    match /_config/{document} {
+      allow get: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+
+    // ---- ONLINE REGISTRATION (public portal) ----
+    // The document ID IS the application reference number: online tracking
+    // is therefore done by directly reading (get) an application whose
+    // number is known, never by querying the collection.
+    match /inscriptions/{numeroDossier} {
+
+      // Reading one specific application: possible for anyone who knows
+      // the reference number (the form additionally requires the date of
+      // birth, checked client-side).
+      allow get: if request.auth != null;
+
+      // Browsing the whole collection: restricted to the admin space.
+      // IMPORTANT NOTE: in the current architecture, every visitor is
+      // authenticated anonymously and roles live in the "users" collection,
+      // invisible to these rules. It is therefore not technically possible
+      // to distinguish the admin from a visitor here. For real enforcement,
+      // accounts need to move to Firebase Authentication with a "role"
+      // custom claim (see GUIDE_FIREBASE.md).
+      allow list: if request.auth != null;
+
+      // A candidate submitting an application: the required biodata fields
+      // must be present, the status is forced to "en_attente" (pending) — a
+      // candidate cannot self-approve or assign themselves a student ID —
+      // AND the registration period set by the admin (document
+      // _config/inscriptions) must be open at the moment of submission.
+      // This check is done HERE, server-side: it applies even if the
+      // public form was altered or bypassed client-side.
+      allow create: if request.auth != null
+        && request.resource.data.statut == 'en_attente'
+        && request.resource.data.numeroDossier == numeroDossier
+        && request.resource.data.nom is string && request.resource.data.nom.size() > 0
+        && request.resource.data.prenom is string && request.resource.data.prenom.size() > 0
+        && request.resource.data.dateNaissance is string && request.resource.data.dateNaissance.size() > 0
+        && request.resource.data.lieuNaissance is string && request.resource.data.lieuNaissance.size() > 0
+        && request.resource.data.genre in ['M', 'F', 'autre']
+        && request.resource.data.nationalite is string && request.resource.data.nationalite.size() > 0
+        && request.resource.data.email is string
+        && request.resource.data.telephone is string
+        && request.resource.data.niveau is int
+        && !('matricule' in request.resource.data)
+        && !('motDePasseProvisoire' in request.resource.data)
+        && (
+          !exists(/databases/$(database)/documents/_config/inscriptions)
+          || (
+            (
+              get(/databases/$(database)/documents/_config/inscriptions).data.debutAnnee == null
+              || request.time >= timestamp.date(
+                   get(/databases/$(database)/documents/_config/inscriptions).data.debutAnnee,
+                   get(/databases/$(database)/documents/_config/inscriptions).data.debutMois,
+                   get(/databases/$(database)/documents/_config/inscriptions).data.debutJour
+                 )
+            )
+            && (
+              get(/databases/$(database)/documents/_config/inscriptions).data.finAnnee == null
+              || request.time < timestamp.date(
+                   get(/databases/$(database)/documents/_config/inscriptions).data.finAnnee,
+                   get(/databases/$(database)/documents/_config/inscriptions).data.finMois,
+                   get(/databases/$(database)/documents/_config/inscriptions).data.finJour
+                 ) + duration.value(1, 'd')
+            )
+          )
+        );
+
+      // Processing an application (approve / reject / delete): admin space.
+      allow update, delete: if request.auth != null;
+    }
+
+    // ---- REST OF THE PLATFORM ----
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

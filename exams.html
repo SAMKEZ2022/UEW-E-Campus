@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UEW E-Campus | Exams Office</title>
+    <link rel="stylesheet" href="./style.css">
+    <!-- Firebase (compat SDK, no build step needed) -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+    <script src="./firebase-config.js"></script>
+    <!-- SheetJS: generates and reads .xlsx files directly in the browser -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body class="theme-exams">
+    <header>
+        <div class="header-brand">
+            <img src="./logo-icon.png" alt="UEW Logo" class="logo-header">
+            <h1>Exams Office</h1>
+        </div>
+        <button class="btn-logout">Log Out</button>
+    </header>
+    <nav class="topnav">
+        <div class="topnav-tab actif" data-tab="accueil">Home</div>
+        <div class="topnav-tab" data-tab="notes">Marks Entry</div>
+    </nav>
+    <div class="container">
+
+        <section class="tab-page actif" data-tab="accueil">
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Welcome</h3>
+            <div class="card">
+                <p>This space lets you enter or import student marks, course unit by course unit,
+                for any department and any level of the institution.</p>
+                <p>Go to the <b>Marks Entry</b> tab, then choose in turn a department, a level and a
+                course unit: the list of students concerned (with their student ID) is displayed
+                automatically, ready to be graded by hand or via an Excel file.</p>
+            </div>
+        </section>
+
+        <section class="tab-page" data-tab="notes">
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Marks Entry by Course Unit</h3>
+            <div class="card">
+                <label>Department
+                    <select id="examenFiliere" onchange="remplirSelectMatieresExamen()"></select>
+                </label>
+                <label>Level
+                    <select id="examenNiveau" onchange="remplirSelectMatieresExamen()"></select>
+                </label>
+                <label>Course Unit
+                    <select id="examenMatiere" onchange="afficherFormulaireNotesExamen()">
+                        <option value="">-- Choose the department and level --</option>
+                    </select>
+                </label>
+            </div>
+            <div id="zoneSaisieNotesExamen"></div>
+        </section>
+
+    </div>
+    <script src="./script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            remplirSelectFilieres('examenFiliere');
+            remplirSelectNiveaux('examenNiveau');
+        });
+    </script>
+</body>
+</html>

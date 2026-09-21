@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UEW E-Campus | Login</title>
+    <link rel="stylesheet" href="./style.css">
+    <!-- Firebase (compat SDK, no build step needed) -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+    <script src="./firebase-config.js"></script>
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <img src="./logo.png" alt="UEW Logo" class="logo-login">
+        <h2>University of Education, Winneba</h2>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Log In</button>
+            <p id="error" class="error"></p>
+        </form>
+        <p class="lien-inscription">
+            Not yet a student at UEW?<br>
+            <a href="registration.html">Apply for admission online</a>
+        </p>
+        <p class="info">
+            <b>Test Accounts:</b><br>
+            Admin: admin@uew-ecampus.edu.gh / UEW2026#Admin <br>
+            Exams Office: exams@uew-ecampus.edu.gh / UEW2026#Exams <br>
+            Lecturer (ICT): lecturer.ict@uew-ecampus.edu.gh / UEW2026#LectICT <br>
+            Student (Accounting &amp; Finance): student.acctfin@uew-ecampus.edu.gh / UEW2026#StuAF
+        </p>
+    </div>
+    <script src="./script.js"></script>
+</body>
+</html>

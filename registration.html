@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Registration | UEW E-Campus</title>
+    <link rel="stylesheet" href="./style.css">
+    <!-- Firebase (compat SDK, no build step needed) -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+    <script src="./firebase-config.js"></script>
+</head>
+<!-- data-public="true": page accessible WITHOUT an account (external candidates). -->
+<body class="public-body" data-public="true">
+
+    <header class="public-header">
+        <img src="./logo.png" alt="UEW Logo" class="public-logo">
+        <div>
+            <h1>Online Registration</h1>
+            <p>University of Education, Winneba — E-Campus</p>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <section>
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Application Form</h3>
+            <p class="info-public">
+                Fill in this form to submit your application. An <b>application reference number</b> will be
+                given to you immediately: keep it, it lets you track your application and retrieve your
+                login credentials once your registration is approved.
+                Fields marked with an <span class="obligatoire">*</span> are required.
+            </p>
+
+            <div id="periodeInscriptionInfo"></div>
+
+            <form id="formInscription" novalidate>
+
+                <fieldset>
+                    <legend>Biodata</legend>
+                    <div class="form-grid">
+                        <label>Last Name <span class="obligatoire">*</span>
+                            <input type="text" id="insNom" placeholder="e.g. MENSAH" autocomplete="family-name">
+                        </label>
+                        <label>First Name(s) <span class="obligatoire">*</span>
+                            <input type="text" id="insPrenom" placeholder="e.g. Kofi Owusu" autocomplete="given-name">
+                        </label>
+                        <label>Date of Birth <span class="obligatoire">*</span>
+                            <input type="date" id="insDateNaissance" autocomplete="bday">
+                        </label>
+                        <label>Place of Birth <span class="obligatoire">*</span>
+                            <input type="text" id="insLieuNaissance" placeholder="e.g. Winneba, Ghana">
+                        </label>
+                        <label>Gender <span class="obligatoire">*</span>
+                            <select id="insGenre">
+                                <option value="">-- Choose --</option>
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                                <option value="autre">Other / prefer not to say</option>
+                            </select>
+                        </label>
+                        <label>Nationality <span class="obligatoire">*</span>
+                            <input type="text" id="insNationalite" placeholder="e.g. Ghanaian">
+                        </label>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>ID Document <small>(optional)</small></legend>
+                    <p class="info-public">
+                        If you do not yet have an ID document, leave these two fields blank: your
+                        application remains valid, the document can be provided to the administration later.
+                    </p>
+                    <div class="form-grid">
+                        <label>Document Type
+                            <select id="insTypePiece">
+                                <option value="">-- No document --</option>
+                                <option value="cni">National ID Card</option>
+                                <option value="passeport">Passport</option>
+                                <option value="carte_consulaire">Consular Card</option>
+                                <option value="extrait_naissance">Birth Certificate</option>
+                                <option value="autre">Other document</option>
+                            </select>
+                        </label>
+                        <label>Document Number
+                            <input type="text" id="insNumeroPiece" placeholder="e.g. GHA-123456789-0">
+                        </label>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Contact</legend>
+                    <div class="form-grid">
+                        <label>Personal Email <span class="obligatoire">*</span>
+                            <input type="email" id="insEmail" placeholder="e.g. kofi.owusu@gmail.com" autocomplete="email">
+                        </label>
+                        <label>Phone <span class="obligatoire">*</span>
+                            <input type="tel" id="insTelephone" placeholder="e.g. +233 20 000 0000" autocomplete="tel">
+                        </label>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Desired Programme</legend>
+                    <div class="form-grid">
+                        <label>Department <span class="obligatoire">*</span>
+                            <select id="insFiliere"></select>
+                        </label>
+                        <label>Level <span class="obligatoire">*</span>
+                            <select id="insNiveau"></select>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <p id="inscriptionErreur" class="error"></p>
+                <button type="submit">Submit My Application</button>
+            </form>
+
+            <div id="inscriptionConfirmation"></div>
+        </section>
+
+        <section>
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Track My Application</h3>
+            <p class="info-public">
+                Enter your application reference number and date of birth to check the status of
+                your application and, if approved, retrieve your E-Campus login credentials.
+            </p>
+            <form id="formSuiviInscription">
+                <div class="form-grid">
+                    <label>Application Reference No.
+                        <input type="text" id="suiviNumero" placeholder="e.g. UEW-APP-2026-4F7K2P">
+                    </label>
+                    <label>Date of Birth
+                        <input type="date" id="suiviDateNaissance">
+                    </label>
+                </div>
+                <button type="submit" class="btn-secondary">Check My Application</button>
+            </form>
+            <div id="suiviResultat"></div>
+        </section>
+
+        <p class="info-public" style="text-align:center;">
+            Already have an account? <a href="index.html">Log in to E-Campus</a>
+        </p>
+
+    </div>
+
+    <script src="./script.js"></script>
+</body>
+</html>

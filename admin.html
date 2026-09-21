@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - UEW E-Campus</title>
+    <link rel="stylesheet" href="./style.css">
+    <!-- Firebase (compat SDK, no build step needed) -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+    <script src="./firebase-config.js"></script>
+    <!-- SheetJS: generates the .xlsx file directly in the browser -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- pdf.js: reads text from PDF files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- Mammoth: reads text from Word (.docx) files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+</head>
+<body class="theme-admin">
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <img src="./logo.png" alt="UEW Logo" class="sidebar-logo">
+                <div class="sidebar-brand-text">
+                    <span>E-CAMPUS</span>
+                </div>
+            </div>
+            <div class="sidebar-profile">
+                <div class="sidebar-avatar">A</div>
+                <div class="sidebar-profile-info">
+                    <span class="sidebar-profile-role">Administrator</span>
+                    <span class="sidebar-profile-email" id="sidebarAdminEmail">—</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-nav-tab actif" data-tab="accueil">Home</div>
+                <div class="sidebar-nav-tab" data-tab="utilisateurs">User Management</div>
+                <div class="sidebar-nav-tab" data-tab="inscriptions">Online Registration</div>
+                <div class="sidebar-nav-tab" data-tab="matieres">Course Unit Management</div>
+                <div class="sidebar-nav-tab" data-tab="programmer">Schedule a Course</div>
+                <div class="sidebar-nav-tab" data-tab="devoirs">Assignment Management</div>
+                <div class="sidebar-nav-tab" data-tab="cours-programmes">Scheduled Courses</div>
+                <div class="sidebar-nav-tab" data-tab="td">Assignments / Submissions</div>
+                <div class="sidebar-nav-tab" data-tab="export">Marks Export (Excel)</div>
+            </nav>
+            <button class="btn-logout sidebar-logout">Log Out</button>
+        </aside>
+
+        <div class="app-main">
+            <nav class="topnav">
+                <div class="topnav-tab actif" data-tab="accueil">Home</div>
+                <div class="topnav-tab" data-tab="utilisateurs">User Management</div>
+                <div class="topnav-tab" data-tab="inscriptions">Online Registration</div>
+                <div class="topnav-tab" data-tab="matieres">Course Unit Management</div>
+                <div class="topnav-tab" data-tab="programmer">Schedule a Course</div>
+                <div class="topnav-tab" data-tab="devoirs">Assignment Management</div>
+                <div class="topnav-tab" data-tab="cours-programmes">Scheduled Courses</div>
+                <div class="topnav-tab" data-tab="td">Assignments / Submissions</div>
+                <div class="topnav-tab" data-tab="export">Marks Export (Excel)</div>
+            </nav>
+
+            <div class="container">
+
+                <section class="tab-page actif" data-tab="accueil">
+                    <h3><img src="./logo-icon.png" class="icon-logo" alt="">Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-box"><div class="stat-value" id="totalCours">0</div><div class="stat-label">Courses</div></div>
+                        <div class="stat-box"><div class="stat-value" id="totalDevoirs">0</div><div class="stat-label">Assignments</div></div>
+                        <div class="stat-box"><div class="stat-value" id="totalMatieres">0</div><div class="stat-label">Course Units</div></div>
+                        <div class="stat-box"><div class="stat-value" id="totalProfs">0</div><div class="stat-label">Lecturers</div></div>
+                        <div class="stat-box"><div class="stat-value" id="totalEtudiants">0</div><div class="stat-label">Students</div></div>
+                        <div class="stat-box"><div class="stat-value" id="totalInscriptions">0</div><div class="stat-label">Pending Applications</div></div>
+                    </div>
+                </section>
+
+                <section class="tab-page" data-tab="utilisateurs">
+                    <h3><img src="./logo-icon.png" class="icon-logo" alt="">User Management</h3>
+                    <form id="formAddUser">
+                        <input type="email" id="newEmail" placeholder="Email" required>
+                        <input type="password" id="newPassword" placeholder="Password" required>
+                        <select id="newRole" required onchange="toggleFiliereField()">
+                            <option value="">-- Choose a role --</option>
+                            <option value="admin">Administrator</option>
+                            <option value="lecturer">Lecturer</option>
+                            <option value="student">Student</option>
+                            <option value="exams">Exams Office</option>
+                        </select>
+                        <input type="text" id="newNom" placeholder="Last Name" style="display:none;">
+                        <input type="text" id="newPrenom" placeholder="First Name" style="display:none;">
+                        <input type="text" id="newMatricule" placeholder="Student ID" style="display:none;">
+                        <select id="newFiliere" style="display:none;">
+                            <option value="">-- Choose a department --</option>
+                        </select>
+                        <select id="newNiveau" style="display:none;">
+                            <option value="">-- Choose a level --</option>
+                        </select>
+                        <button type="submit">Add User</button>
+                    </form>
+                    <div id="listeUsers"></div>
+
+                    <div class="card">
+                        <p><b>Create several users at once (Excel/CSV)</b><br>
+                        Download the template, fill in one row per user — <b>no limit on numbers</b> (100, 200... it goes through in a single import), the password may be left blank (auto-generated, downloadable after creation) — then upload the completed file below. Each row is checked before creation: invalid rows are flagged and not created.</p>
+                        <button type="button" onclick="telechargerModeleUsers()" class="btn-secondary">Download template (.xlsx)</button>
+                        <input type="file" id="fichierUsers" accept=".xlsx,.xls,.csv">
+                        <button type="button" onclick="analyserFichierUsers()">Analyse file</button>
+                        <div id="apercuUsersImport"></div>
+                    </div>
+
+                    <h3><img src="./logo-icon.png" class="icon-logo" alt="">Messaging (Lecturers)</h3>
+                    <div class="chat-container">
+                        <div class="chat-contacts" id="chatContacts"></div>
+                        <div class="chat-panel">
+                            <div class="chat-header" id="chatHeader">Select a lecturer to chat with</div>
+                            <div class="chat-messages" id="chatMessages"></div>
+                            <form id="formChat" class="chat-form" style="display:none;">
+                                <input type="text" id="chatInput" placeholder="Write a message..." autocomplete="off" required>
+                                <button type="submit">Send</button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="tab-page" data-tab="inscriptions">
+                    <h3><img src="./logo-icon.png" class="icon-logo" alt="">Online Registration</h3>
+                    <p>Applications submitted by candidates from the public portal
+                    <a href="registration.html" target="_blank">registration.html</a>.
+                    On approval, the student account is created automatically (login email,
+                    temporary password and student ID generated), and the candidate finds their
+                    credentials by tracking their application.</p>
+
+                    <div class="card">
+                        <p><b>Registration Period</b></p>
+                        <p>Outside this period, the public form shows a rejection message and no
+                        longer accepts new applications. Leave a date blank to set no bound on
+                        that side (e.g. leave the end date blank for registration open until
+                        further notice).</p>
+                        <div id="periodeAdminStatut"></div>
+                        <label>Start Date
+                            <input type="date" id="periodeAdminDebut">
+                        </label>
+                        <label>End Date
+                            <input type="date" id="periodeAdminFin">
+                        </label>
+                        <button type="button" onclick="enregistrerPeriodeInscription()">Save Period</button>
+                    </div>
+
+                    <div class="card">
+                        <p id="compteurInscriptions">Loading applications...</p>
+                        <select id="filtreInscriptions" onchange="changerFiltreInscriptions(this.value)">
+                            <option value="en_attente">Pending review</option>
+                            <option value="validee">Approved</option>
+                            <option value="refusee">Rejected</option>
+                            <option value="">All applications</option>
+                        </select>
+                        <button type="button" onclick="exporterInscriptionsExcel()" class="btn-success">Export list (.xlsx)</button>
+                    </div>
+
+                    <div id="listeInscriptions"></div>
+                </section>
+
+                <section class="tab-page" data-tab="matieres">
+                    <h3><img src="./logo-icon.png" class="icon-logo" alt="">Course Unit Management</h3>
+                    <p>Create a course unit for a given level, then assign it to one of your lecturers (from the same department). The lecturer will then find this course unit in their own space.</p>
+                    <form id="formAddMatiere">
+                        <input type="text" id="newNomMatiere" placeholder="Course unit name (e.g. General Mathematics)" required>
+                        <select id="newFiliereMatiere" required>
+                            <option value="">-- Choose a department --</option>
+                        </select>
+                        <select id="newNiveauMatiere" required>
+                            <option value="">-- Choose a level --</option>
+                        </select>
+                        <button type="submit">Add Course Unit</button>
+                    </form>
+                    <div id="listeMatieresAdmin"></div>
+
+                    <div class="card">
+                        <p><b>Quick import from a file</b><br>
+                        Upload a PDF or Word (.docx) file containing the list of course units (one
+                        course-unit name per line): they will be proposed for creation all at
+                        once, for the department and level chosen below.</p>
+                        <select id="importFiliereMatiere" required>
+                            <option value="">-- Choose a department --</option>
+                        </select>
+                        <select id="importNiveauMatiere" required>
+                            <option value="">-- Choose a level --</option>
+                        </select>
+                        <input type="file" id="fichierMatieres" accept=".pdf,.doc,.docx">
+                        <button type="button" onclick="analyserFichierMatieres()">Analyse file</button>
+                        <div id="apercuMatieresImport"></div>
+                    </div>
+                </section>
+
+                <section class="tab-page" data-tab="programmer">
+                    <h3><img src="./logo-icon.png" class="icon-logo" alt="">Schedule a Course</h3>
+                    <form id="formAddCours">
+                        <select id="coursMatiereAdmin" onchange="appliquerMatiereSelectionneeAdmin()">
+                            <option value="">-- Free entry (no course unit) --</option>
+                        </select>
+                        <input type="text" id="newTitre" placeholder="Course title" required>
+                        <input type="datetime-local" id="newDate" required>
+                        <select id="newFiliereCours" required onchange="remplirSelectSalles('newSalle', this.value); toggleFilieresConcerneesCours();">
+                            <option value="">-- Choose a department --</option>
+                        </select>
+                        <select id="newSalle" required>
+                            <option value="">-- Choose a department first --</option>
+                        </select>
+                        <div id="filieresConcerneesWrapper" class="checkbox-group" style="display:none;">
+                            <p><b>Departments concerned by this Common Core course:</b></p>
+                            <div id="filieresConcerneesCours"></div>
+                        </div>
+                        <button type="submit">Schedule Course</button>
+                    </form>
+                    <p class="info">Find the list of already scheduled courses under the <b>Scheduled Courses</b> tab.</p>
+                </section>
+
+                <section class="tab-page" data-tab="devoirs">
+                    <h3><img src="./logo-icon.png" class="icon-logo" alt="">Assignment Management</h3>
+                    <form id="formAddDevoir">
+                        <input type="text" id="newTitreDevoir" placeholder="Assignment title" required>
+                        <textarea id="newDescDevoir" placeholder="Description / instructions" rows="3"></textarea>
+                        <select id="newFiliereDevoir" required>
+                            <option value="">-- Choose a department --</option>
+                        </select>
+                        <button type="submit">Add Assignment</button>
+                    </form>
+                    <div id="listeDevoirsAdmin"></div>
+                </section>
+
+                <section class="tab-page" data-tab="cours-programmes">
+                    <h3><img src="./logo-icon.png" class="icon-logo" alt="">Scheduled Courses</h3>
+                    <div id="listeCoursAdmin"></div>
+                </section>
+
+                <section class="tab-page" data-tab="td">
+                    <h3><img src="./logo-icon.png" class="icon-logo" alt="">Assignments — Submitted Work</h3>
+                    <p>Work submitted by students, across all departments. Grade it directly here.</p>
+                    <div id="listeDepotsProf"></div>
+                </section>
+
+                <section class="tab-page" data-tab="export">
+                    <h3><img src="./logo-icon.png" class="icon-logo" alt="">Marks Export (Excel)</h3>
+                    <div class="card">
+                        <p>Choose a class (department + level): the file will contain one row per student (student ID, last name, first name) and one column per assignment/course unit with the corresponding mark.</p>
+                        <select id="exportFiliere">
+                            <option value="">-- Choose a department --</option>
+                        </select>
+                        <select id="exportNiveau">
+                            <option value="">-- Choose a level --</option>
+                        </select>
+                        <button type="button" onclick="exporterNotesExcel()" class="btn-success">Download transcript (.xlsx)</button>
+                    </div>
+
+                    <h3><img src="./logo-icon.png" class="icon-logo" alt="">List of Enrolled Students (Excel)</h3>
+                    <div class="card">
+                        <p>Download the nominal list of enrolled students (student ID, last name, first name, contacts, biodata...),
+                        with a summary sheet of headcounts. Leave "All Departments" and/or "All Levels"
+                        to not filter on that criterion.</p>
+                        <select id="exportEtudiantsFiliere">
+                            <option value="">All Departments</option>
+                        </select>
+                        <select id="exportEtudiantsNiveau">
+                            <option value="">All Levels</option>
+                        </select>
+                        <button type="button" onclick="exporterListeEtudiants()" class="btn-success">Download list (.xlsx)</button>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+    <script src="./script.js"></script>
+    <script>
+        // Fill the department selectors on load
+        document.addEventListener('DOMContentLoaded', () => {
+            remplirSelectFilieres('newFiliere');
+            remplirSelectFilieres('newFiliereCours');
+            remplirSelectFilieres('newFiliereDevoir');
+            remplirSelectFilieres('newFiliereMatiere');
+            remplirSelectNiveaux('newNiveauMatiere');
+            remplirSelectFilieres('importFiliereMatiere');
+            remplirSelectNiveaux('importNiveauMatiere');
+            remplirSelectFilieres('exportFiliere');
+            remplirSelectNiveaux('exportNiveau');
+            remplirSelectFilieresAvecToutes('exportEtudiantsFiliere');
+            remplirSelectNiveauxAvecToutes('exportEtudiantsNiveau');
+            // Initialise the room select for the default department
+            const firstFiliereKey = Object.keys(FILIERES)[0];
+            if (firstFiliereKey) {
+                document.getElementById('newFiliereCours').value = firstFiliereKey;
+                remplirSelectSalles('newSalle', firstFiliereKey);
+            }
+            // Shows the logged-in administrator's email in the sidebar
+            const sidebarEmail = document.getElementById('sidebarAdminEmail');
+            if (sidebarEmail && currentUser) sidebarEmail.innerText = currentUser.email;
+
+            // The sidebar mirrors exactly the same tabs as the top bar:
+            // clicking either one activates the same tab.
+            document.querySelectorAll('.sidebar-nav-tab').forEach(tab => {
+                tab.addEventListener('click', () => activerOnglet(tab.dataset.tab));
+            });
+        });
+
+        // Shows the "Departments concerned" checkbox list only when the
+        // department chosen for the course is "Common Core" (otherwise the
+        // course's own department is enough to know who should receive it).
+        function toggleFilieresConcerneesCours() {
+            const filiereId = document.getElementById('newFiliereCours').value;
+            const wrapper = document.getElementById('filieresConcerneesWrapper');
+            if (estFiliereTroncCommun(filiereId)) {
+                wrapper.style.display = 'block';
+                remplirCheckboxFilieresConcernees('filieresConcerneesCours');
+            } else {
+                wrapper.style.display = 'none';
+            }
+        }
+
+        function toggleFiliereField() {
+            const role = document.getElementById('newRole').value;
+            const filiereSelect = document.getElementById('newFiliere');
+            const niveauSelect = document.getElementById('newNiveau');
+            const nomInput = document.getElementById('newNom');
+            const prenomInput = document.getElementById('newPrenom');
+            const matriculeInput = document.getElementById('newMatricule');
+            if (role === 'admin' || role === 'exams') {
+                filiereSelect.style.display = 'none';
+                filiereSelect.required = false;
+            } else {
+                filiereSelect.style.display = 'block';
+                filiereSelect.required = true;
+                remplirSelectFilieres('newFiliere');
+            }
+
+            // The level only concerns students: it determines who they share
+            // the class list and timer with.
+            // Last Name/First Name/Student ID too: needed for the Excel export of marks.
+            if (role === 'student') {
+                niveauSelect.style.display = 'block';
+                niveauSelect.required = true;
+                remplirSelectNiveaux('newNiveau');
+                nomInput.style.display = 'block';
+                nomInput.required = true;
+                prenomInput.style.display = 'block';
+                prenomInput.required = true;
+                matriculeInput.style.display = 'block';
+                matriculeInput.required = true;
+            } else {
+                niveauSelect.style.display = 'none';
+                niveauSelect.required = false;
+                nomInput.style.display = 'none';
+                nomInput.required = false;
+                prenomInput.style.display = 'none';
+                prenomInput.required = false;
+                matriculeInput.style.display = 'none';
+                matriculeInput.required = false;
+            }
+        }
+    </script>
+</body>
+</html>

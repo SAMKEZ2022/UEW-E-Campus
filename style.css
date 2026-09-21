@@ -1,0 +1,875 @@
+/* ===================================
+   UEW E-CAMPUS PLATFORM - STYLESHEET
+   Official University of Education, Winneba palette (from the crest): Royal
+   Blue / Red / Charcoal, with a gold accent for highlights.
+   =================================== */
+:root {
+    /* Official UEW colours (from the crest): blue + red */
+    --uew-blue: #0033A0;
+    --uew-blue-dark: #001F5C;
+    --uew-gold: #E8B923;
+    --uew-gold-light: #F5D877;
+    --uew-charcoal: #2B2B2B;
+    --primary: #0033A0;
+    --accent: #C8102E;
+    --danger: #C0392B;
+    --live: #FF3B30;
+    --secondary: #001F5C;
+    --bg: #f5f6fa;
+    --text: #333;
+    /* Single font used everywhere (login + the 4 spaces: admin/lecturer/
+       student/exams) so text looks strictly identical across every role. */
+    --font-app: 'Times New Roman', Times, Georgia, serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    font-family: var(--font-app);
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+}
+
+/* Every form and text element explicitly inherits the same font: this
+   stops a browser from applying its own "system" default font to
+   inputs/buttons/selects, which used to create small inconsistencies
+   between the admin / lecturer / student / exams spaces. */
+input, select, textarea, button, h1, h2, h3, h4, h5, h6, p, span, a, label, div {
+    font-family: inherit;
+}
+
+header, .header {
+    background: var(--primary);
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+}
+
+.header-brand h1 {
+    margin: 0;
+    color: white;
+}
+
+.logo-header {
+    height: 44px;
+    width: 44px;
+    margin-right: 15px;
+    background: white;
+    border-radius: 50%;
+    padding: 3px;
+    flex-shrink: 0;
+}
+
+.logo-login {
+    height: 90px;
+    width: auto;
+    display: block;
+    margin: 0 auto 10px;
+}
+
+/* ---- UEW brand icon: replaces, throughout the platform, the
+   emoji that used to be used to visually mark a section (section
+   titles, course/assignment/course-unit/material cards...). ---- */
+.icon-logo {
+    height: 18px;
+    width: 18px;
+    vertical-align: -3px;
+    margin-right: 8px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.08);
+    flex-shrink: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+h1, h3 { color: var(--primary); }
+h3 { border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-top: 30px; }
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.card-live { border-left: 5px solid var(--live); background: #fff0f0; }
+
+.checkbox-group {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+.checkbox-group p { margin: 0 0 8px 0; }
+.checkbox-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: auto;
+    margin: 0 16px 8px 0;
+    font-weight: normal;
+    cursor: pointer;
+}
+.checkbox-item input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+button:hover { opacity: 0.9; }
+
+.btn-danger { background: var(--danger); }
+.btn-logout { background: var(--uew-charcoal); }
+.btn-secondary { background: #6c757d; }
+.btn-success { background: var(--accent); }
+.btn-live {
+    background: var(--live);
+    font-size: 16px;
+    padding: 12px 24px;
+    display: inline-block;
+    text-decoration: none;
+    color: white;
+    animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+p.live { color: var(--live); font-weight: bold; }
+p.success { color: var(--accent); font-weight: bold; }
+p.warning { color: var(--danger); font-weight: bold; }
+
+a { color: var(--secondary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---- Page de connexion ---- */
+body.login-body {
+    background: linear-gradient(135deg, var(--uew-blue-dark), var(--primary));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+.login-container {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    text-align: center;
+    width: 350px;
+}
+.login-container h1 { margin: 0; }
+.login-container h2 { color: #555; font-weight: 300; margin-bottom: 20px; }
+.login-container button { width: 100%; font-size: 16px; }
+.info { font-size: 12px; color: #777; margin-top: 20px; text-align: left; }
+.error { color: var(--danger); }
+
+/* ---- Statistiques (admin) ---- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+}
+.stat-box {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.stat-box .stat-value { font-size: 32px; font-weight: bold; color: var(--primary); }
+.stat-box .stat-label { color: #666; font-size: 14px; margin-top: 5px; }
+
+/* ---- "Course Live" banner (student) ---- */
+.live-banner {
+    background: var(--live);
+    color: white;
+    font-weight: bold;
+    padding: 12px 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    animation: pulse 1.5s infinite;
+}
+.live-banner a {
+    background: white;
+    color: var(--live);
+    padding: 4px 12px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+.live-banner a:hover { text-decoration: none; opacity: 0.85; }
+
+/* ---- Class list (student) + timer ---- */
+.classe-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 20px;
+}
+.minuteur {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 14px;
+    background: #f6efdc;
+    color: var(--primary);
+    padding: 4px 10px;
+    border-radius: 20px;
+    min-width: 78px;
+    justify-content: center;
+}
+.minuteur-actif {
+    background: #ffe6e6;
+    color: var(--live);
+    animation: pulse 1.5s infinite;
+}
+
+/* ---- Student attendance in a course (lecturer) ---- */
+.presence-etudiants {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+}
+.presence-etudiants ul {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+}
+.presence-etudiants li {
+    padding: 4px 0;
+    font-family: 'Courier New', monospace;
+}
+
+/* ---- Embedded video conferencing (Jitsi) ---- */
+.jitsi-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* ratio 16:9 */
+    margin-top: 15px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #000;
+}
+.jitsi-wrapper iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+.jitsi-fallback {
+    margin-top: 15px;
+    padding: 20px;
+    background: #fff3f3;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* ===================================
+   THEMES PAR ESPACE
+   Each space redefines --primary / --accent / --secondary / --bg.
+   Comme tout le CSS ci-dessus est construit avec ces variables,
+   boutons, titres, liens et cartes se reteintent automatiquement.
+   =================================== */
+
+/* ---- Student: UEW Blue / White ---- */
+body.theme-student {
+    --primary: #D4161D;
+    --accent: #C9962E;
+    --secondary: #7A0F13;
+    --bg: #FBF8F2;
+}
+body.theme-student .card { border-top: 3px solid var(--primary); }
+
+/* ---- Prof : Anthracite / Or ---- */
+body.theme-lecturer {
+    --primary: #1A1A1A;
+    --accent: #C9962E;
+    --secondary: #4A4A4A;
+    --bg: #FAFAF8;
+}
+body.theme-lecturer .card { border-top: 3px solid var(--accent); }
+body.theme-lecturer input,
+body.theme-lecturer select,
+body.theme-lecturer textarea { border-color: #D8D0C0; }
+
+/* ---- Admin : Rouge / Or / Anthracite ---- */
+body.theme-admin {
+    --primary: #D4161D;
+    --accent: #C9962E;
+    --secondary: #2B2B2B;
+    --bg: #FFFFFF;
+    --coffee: #2B2B2B;
+}
+body.theme-admin header,
+body.theme-admin .header {
+    background: linear-gradient(120deg, #7A0F13 0%, #D4161D 55%, #C9962E 130%);
+    border-bottom: 4px solid var(--coffee);
+}
+body.theme-admin h3 { border-bottom-color: var(--accent); }
+body.theme-admin .stat-box { border-top: 3px solid var(--accent); }
+body.theme-admin .stat-box .stat-value { color: var(--primary); }
+body.theme-admin .card { border-top: 3px solid var(--primary); }
+
+/* ---- Service d'Examen : Bleu ardoise / Or (distinct des 3 autres espaces) ---- */
+body.theme-exams {
+    --primary: #1B4F72;
+    --accent: #C9962E;
+    --secondary: #154360;
+    --bg: #F4F8FB;
+}
+body.theme-exams .card { border-top: 3px solid var(--primary); }
+
+/* ===================================
+   NOTES ET MENTIONS
+   Tableau de saisie (Service d'Examen) + pastilles de mention (partout où
+   a mark is displayed: entry, student view).
+   =================================== */
+.notes-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+.notes-table th, .notes-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+.notes-table th { background: var(--primary); color: white; }
+.notes-table input[type="number"] { width: 90px; margin-bottom: 0; }
+.notes-table button { padding: 6px 14px; font-size: 13px; margin: 0; }
+
+.mention-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    white-space: nowrap;
+}
+.mention-attente { background: #95A5A6; }
+.mention-non-valide { background: var(--danger); }
+.mention-passable { background: #E67E22; }
+.mention-assez-bien { background: #C9962E; }
+.mention-bien { background: #2E86DE; }
+.mention-tres-bien { background: #27AE60; }
+.mention-excellent { background: #1E8449; }
+
+/* ===================================
+   MESSAGERIE INSTANTANEE
+   Real-time chat: Lecturer <-> Student and Lecturer <-> Admin.
+   Two columns: contact list (left) + active conversation (right).
+   =================================== */
+.chat-container {
+    display: flex;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    height: 480px;
+    margin-bottom: 20px;
+}
+
+.chat-contacts {
+    width: 260px;
+    flex-shrink: 0;
+    border-right: 1px solid #e6e6e6;
+    background: #fafbfc;
+    overflow-y: auto;
+}
+.chat-contacts-groupe-titre {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #888;
+    font-weight: bold;
+    padding: 12px 14px 4px;
+}
+.chat-contact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: 0.15s;
+}
+.chat-contact:hover { background: #eef2f7; }
+.chat-contact.actif { background: #eef2f7; border-left-color: var(--accent); font-weight: bold; }
+.chat-contact-nom { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chat-contact-badge {
+    background: var(--danger);
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 999px;
+    padding: 1px 7px;
+    flex-shrink: 0;
+}
+.chat-contacts-vide { padding: 14px; color: #888; font-size: 14px; }
+
+.chat-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.chat-header {
+    padding: 14px 18px;
+    background: var(--primary);
+    color: white;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--bg);
+}
+.chat-messages-vide {
+    margin: auto;
+    color: #999;
+    text-align: center;
+    font-size: 14px;
+}
+.chat-bulle {
+    max-width: 70%;
+    padding: 8px 12px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+.chat-bulle-heure {
+    display: block;
+    font-size: 10px;
+    opacity: 0.65;
+    margin-top: 3px;
+}
+.chat-bulle-moi {
+    align-self: flex-end;
+    background: var(--accent);
+    color: white;
+    border-bottom-right-radius: 3px;
+}
+.chat-bulle-autre {
+    align-self: flex-start;
+    background: white;
+    color: var(--text);
+    border: 1px solid #e2e2e2;
+    border-bottom-left-radius: 3px;
+}
+.chat-form {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: white;
+    border-top: 1px solid #e6e6e6;
+    margin: 0;
+    border-radius: 0;
+    flex-shrink: 0;
+}
+.chat-form input {
+    margin: 0;
+    flex: 1;
+}
+.chat-form button { margin: 0; white-space: nowrap; }
+
+@media (max-width: 640px) {
+    .chat-container { flex-direction: column; height: 560px; }
+    .chat-contacts { width: 100%; max-height: 160px; border-right: none; border-bottom: 1px solid #e6e6e6; }
+}
+
+/* ===================================
+   NAVIGATION PAR ONGLETS (Accueil / Tableau de bord / Mes cours)
+   White bar under the coloured header, e-learning platform style.
+   Each page's content is split across 3 ".tab-page" blocks; only one is
+   shown at a time (handled in JS by activerOnglet() in script.js).
+   =================================== */
+.topnav {
+    background: white;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 30px;
+    border-bottom: 1px solid #e6e6e6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+.topnav-tab {
+    padding: 16px 18px;
+    cursor: pointer;
+    color: #555;
+    font-size: 15px;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    transition: 0.15s;
+    user-select: none;
+    flex-shrink: 0;
+}
+.topnav-tab:hover { color: var(--primary); }
+.topnav-tab.actif {
+    color: var(--primary);
+    border-bottom-color: var(--accent);
+    font-weight: 600;
+}
+
+.tab-page { display: none; }
+.tab-page.actif { display: block; }
+
+@media (max-width: 640px) {
+    .topnav { padding: 0 10px; }
+    .topnav-tab { padding: 14px 12px; font-size: 14px; }
+}
+
+/* ===================================
+   ESPACE ADMIN : PROFIL EN BARRE LATÉRALE + MENU EN LIGNE
+   The sidebar carries the logo/the administrator's profile; the top bar
+   (.topnav, reused as-is) carries the tabs.
+   Both tab lists point to the same tabs (activerOnglet in script.js),
+   allowing navigation from either one — handy on mobile, where the
+   sidebar collapses.
+   =================================== */
+.app-shell {
+    display: flex;
+    align-items: stretch;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: linear-gradient(180deg, var(--uew-blue-dark) 0%, var(--uew-blue) 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 20px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    margin-bottom: 20px;
+}
+.sidebar-logo {
+    height: 40px;
+    width: auto;
+    max-width: 150px;
+    border-radius: 6px;
+    background: white;
+    padding: 6px 10px;
+    flex-shrink: 0;
+}
+.sidebar-brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+.sidebar-brand-text strong { font-size: 17px; letter-spacing: .5px; }
+.sidebar-brand-text span { font-size: 11px; color: var(--uew-gold-light); font-weight: 600; letter-spacing: .5px; }
+
+.sidebar-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 20px 20px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+.sidebar-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--uew-gold);
+    color: var(--uew-blue-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+.sidebar-profile-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.sidebar-profile-role { font-weight: 600; font-size: 14px; }
+.sidebar-profile-email {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+.sidebar-nav-tab {
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.8);
+    border-left: 3px solid transparent;
+    transition: 0.15s;
+    user-select: none;
+}
+.sidebar-nav-tab:hover { background: rgba(255,255,255,0.08); color: white; }
+.sidebar-nav-tab.actif {
+    background: rgba(255,255,255,0.12);
+    border-left-color: var(--uew-gold);
+    color: white;
+    font-weight: 600;
+}
+
+.sidebar-logout {
+    margin: 16px 20px 0;
+    width: calc(100% - 40px);
+}
+
+.app-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+body.theme-admin .app-main .topnav { top: 0; }
+
+@media (max-width: 900px) {
+    .app-shell { flex-direction: column; }
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 14px 16px;
+        gap: 14px;
+    }
+    .sidebar-brand,
+    .sidebar-profile {
+        border-bottom: none;
+        padding: 0;
+        margin-bottom: 0;
+    }
+    .sidebar-nav { display: none; } /* on mobile, navigation stays in .topnav to save space */
+    .sidebar-logout { margin: 0 0 0 auto; width: auto; }
+}
+
+/* ===================================
+   PLATEFORME D'INSCRIPTION EN LIGNE
+   (page publique registration.html + onglet admin "Inscriptions en ligne")
+   =================================== */
+
+/* ---- Public page (no sidebar: the candidate is not logged in) ---- */
+body.public-body {
+    background: var(--bg);
+    min-height: 100vh;
+}
+
+.public-header {
+    background: var(--primary);
+    color: #fff;
+    padding: 18px 25px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.public-header h1 { color: #fff; margin: 0; font-size: 24px; }
+.public-header p { margin: 4px 0 0; font-size: 14px; opacity: 0.9; }
+
+.public-logo {
+    height: 52px;
+    background: #fff;
+    padding: 5px;
+    border-radius: 6px;
+}
+
+.info-public {
+    background: #fff;
+    border-left: 4px solid var(--accent);
+    padding: 12px 15px;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+/* Registration form: 2 columns on wide screens, 1 on mobile */
+fieldset {
+    border: 1px solid #e0dcd2;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 18px;
+}
+
+fieldset legend {
+    color: var(--primary);
+    font-weight: bold;
+    padding: 0 8px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+}
+
+.form-grid label {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+    gap: 4px;
+}
+
+.form-grid label input,
+.form-grid label select {
+    margin: 0;
+    font-weight: normal;
+}
+
+.obligatoire { color: var(--danger); }
+
+/* Application reference number given to the candidate after submission:
+   must be very readable, it is the only key that lets them find their
+   application again. */
+.numero-dossier {
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: var(--primary);
+    background: #fff6f6;
+    border: 2px dashed var(--primary);
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+    user-select: all;
+}
+
+.lien-inscription {
+    margin-top: 18px;
+    font-size: 14px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.lien-inscription a { font-weight: bold; color: var(--primary); }
+
+/* ---- Traitement des dossiers (admin) ---- */
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    vertical-align: middle;
+}
+
+.badge-en_attente { background: var(--accent); }
+.badge-validee { background: #27AE60; }
+.badge-refusee { background: var(--danger); }
+
+.fiche-etat-civil {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.fiche-etat-civil li {
+    padding: 4px 0;
+    border-bottom: 1px dotted #eee;
+}
+
+.affectation-inscription {
+    background: #faf8f3;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin: 12px 0;
+}
+
+.affectation-inscription p { margin: 0 0 6px; font-size: 14px; }
+.affectation-inscription select { margin-bottom: 6px; }

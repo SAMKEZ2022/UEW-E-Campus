@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UEW E-Campus | Lecturer Space</title>
+    <link rel="stylesheet" href="./style.css">
+    <!-- Firebase (compat SDK, no build step needed) -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+    <script src="./firebase-config.js"></script>
+</head>
+<body class="theme-lecturer">
+    <header>
+        <div class="header-brand">
+            <img src="./logo-icon.png" alt="UEW Logo" class="logo-header">
+            <h1>Lecturer Space</h1>
+        </div>
+        <button class="btn-logout">Log Out</button>
+    </header>
+    <nav class="topnav">
+        <div class="topnav-tab actif" data-tab="accueil">Home</div>
+        <div class="topnav-tab" data-tab="dashboard">Dashboard</div>
+        <div class="topnav-tab" data-tab="cours">My Courses</div>
+    </nav>
+    <div class="container">
+
+        <section class="tab-page actif" data-tab="accueil">
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">My Courses &amp; Live Sessions</h3>
+            <p>These courses are scheduled by the administration. You can start or stop the Live session for the ones assigned to you.</p>
+            <div id="listeCoursProf"></div>
+        </section>
+
+        <section class="tab-page" data-tab="dashboard">
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Assignment Submissions</h3>
+            <div id="listeDepotsProf"></div>
+
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Messaging (students &amp; administration)</h3>
+            <div class="chat-container">
+                <div class="chat-contacts" id="chatContacts"></div>
+                <div class="chat-panel">
+                    <div class="chat-header" id="chatHeader">Select a contact to chat</div>
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <form id="formChat" class="chat-form" style="display:none;">
+                        <input type="text" id="chatInput" placeholder="Write a message..." autocomplete="off" required>
+                        <button type="submit">Send</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section class="tab-page" data-tab="cours">
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">My Course Units</h3>
+            <p>Course units assigned to you by the administration.</p>
+            <div id="listeMatieresProf"></div>
+
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Send Course Material</h3>
+            <form id="formAddSupport">
+                <select id="supportCours" required></select>
+                <input type="text" id="supportNom" placeholder="Material name: Chapter 1" required>
+                <div class="checkbox-group">
+                    <p>Sharing type:</p>
+                    <label class="checkbox-item"><input type="radio" name="supportType" value="fichier" checked> File (PDF, Word...)</label>
+                    <label class="checkbox-item"><input type="radio" name="supportType" value="lien"> Google Drive link</label>
+                </div>
+                <input type="file" id="supportFile" required>
+                <input type="url" id="supportLien" placeholder="https://drive.google.com/..." style="display:none;">
+                <small class="info" style="display:block; margin:-6px 0 10px;">For a Drive link: remember to set sharing to "Anyone with the link can view".</small>
+                <button type="submit">Send to Students</button>
+            </form>
+            <div id="listeSupportsProf"></div>
+        </section>
+
+    </div>
+    <script src="./script.js"></script>
+</body>
+</html>
