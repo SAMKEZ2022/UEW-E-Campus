@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UEW E-Campus | Examinations Office</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <meta name="theme-color" content="#0033A0">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <link rel="stylesheet" href="./style.css">
+    <!-- Mode hors-ligne / 2G : doit être chargé avant Firebase -->
+    <script src="./offline.js"></script>
+    <!-- Firebase (SDK compat, pas de build nécessaire) -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+    <script src="./firebase-config.js"></script>
+    <!-- SheetJS : génère et lit les fichiers .xlsx directement dans le navigateur -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body class="theme-examen">
+    <header>
+        <div class="header-brand">
+            <img src="./logo-icon.png" alt="UEW logo" class="logo-header">
+            <h1>Examinations Office</h1>
+        </div>
+        <button class="btn-logout">Log out</button>
+    </header>
+    <nav class="topnav">
+        <div class="topnav-tab actif" data-tab="accueil">Home</div>
+        <div class="topnav-tab" data-tab="notes">Score Entry</div>
+        <div class="topnav-tab" data-tab="releves">Transcripts</div>
+        <div class="topnav-tab" data-tab="parcours">Student academic record</div>
+    </nav>
+    <div class="container">
+
+        <section class="tab-page actif" data-tab="accueil">
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Welcome</h3>
+            <div class="card">
+                <p>This space lets you enter or import student scores, course by course, for any department and any level of the university.</p>
+                <p>Go to the tab <b>Score Entry</b>, then choose a department, a level and a course in turn: the list of students concerned (with their index numbers) is displayed automatically, ready to be graded by hand or through an Excel file.</p>
+            </div>
+        </section>
+
+        <section class="tab-page" data-tab="notes">
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Score Entry by Course</h3>
+            <div class="card">
+                <label>Department
+                    <select id="examenFiliere" onchange="remplirSelectMatieresExamen()"></select>
+                </label>
+                <label>Level
+                    <select id="examenNiveau" onchange="remplirSelectMatieresExamen()"></select>
+                </label>
+                <label>Course
+                    <select id="examenMatiere" onchange="afficherFormulaireNotesExamen()">
+                        <option value="">-- Choose department and level --</option>
+                    </select>
+                </label>
+            </div>
+            <div id="zoneSaisieNotesExamen"></div>
+        </section>
+
+        <section class="tab-page" data-tab="releves">
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Printing Transcripts</h3>
+            <div class="card">
+                <p>Choose a department, a level, a semester and then a student: the transcript is issued <b>semester by semester</b> and includes only the courses of that semester (graded or not) together with the average and credit hours of that semester. It can then be printed directly.</p>
+                <label>Department
+                    <select id="releveFiliere" onchange="remplirSelectEtudiantsReleve()"></select>
+                </label>
+                <label>Level
+                    <select id="releveNiveau" onchange="remplirSelectEtudiantsReleve()"></select>
+                </label>
+                <label>Semester
+                    <select id="releveSemestre">
+                        <option value="">-- First choose the level --</option>
+                    </select>
+                </label>
+                <label>Student
+                    <select id="releveEtudiant">
+                        <option value="">-- Choose department and level --</option>
+                    </select>
+                </label>
+                <button type="button" onclick="genererReleveExamen()">Generate transcript</button>
+            </div>
+            <div id="zoneReleveExamen"></div>
+        </section>
+
+        <section class="tab-page" data-tab="parcours">
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Student academic record</h3>
+            <div class="card">
+                <p>Rebuilds a student's complete academic history, semester by semester and course by course (grouped by module, with credit hours), including scores obtained in a previous programme if they re-registered with an old index number. Also includes their cumulative attendance time in live lectures and the number of assignments submitted.</p>
+                <label>Department (of the current class)
+                    <select id="parcoursFiliere" onchange="remplirSelectEtudiantsParcours()"></select>
+                </label>
+                <label>Level (current)
+                    <select id="parcoursNiveau" onchange="remplirSelectEtudiantsParcours()"></select>
+                </label>
+                <label>Student
+                    <select id="parcoursEtudiant">
+                        <option value="">-- Choose department and level --</option>
+                    </select>
+                </label>
+                <button type="button" onclick="genererParcoursEtudiant()">Generate academic record</button>
+            </div>
+            <div id="zoneParcoursExamen"></div>
+        </section>
+
+    </div>
+    <script src="./script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            remplirSelectFilieres('examenFiliere');
+            remplirSelectNiveaux('examenNiveau');
+            remplirSelectFilieres('releveFiliere');
+            remplirSelectNiveaux('releveNiveau');
+            remplirSelectFilieres('parcoursFiliere');
+            remplirSelectNiveaux('parcoursNiveau');
+        });
+    </script>
+</body>
+</html>

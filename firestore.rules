@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Configuration used by the public pages (e.g. whether the registration
+    // period decided by the admin is open or closed). Public read access is
+    // needed so the portal knows what to display before any application is
+    // submitted; modification should remain reserved to the admin space.
+    match /_config/{document} {
+      allow get: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+
+    // ---- ONLINE REGISTRATIONS (public portal) ----
+    // The document id IS the application number: online tracking is therefore
+    // done by a direct read (get) of an application whose number is known,
+    // not by a query on the collection.
+    match /inscriptions/{numeroDossier} {
+
+      // Reading one specific application: possible for whoever knows its number
+      // (the form also requires the date of birth, checked on the client side).
+      allow get: if request.auth != null;
+
+      // Browsing the whole collection: meant for the DAAS space (Academic
+      // Affairs & Registry), in charge of approving registrations.
+      // IMPORTANT NOTE: in the current architecture every visitor is signed in
+      // anonymously and roles live in the "users" collection, which the rules
+      // cannot see. The DAAS therefore cannot be technically distinguished from
+      // a visitor here. For real lock-down, move accounts to Firebase
+      // Authentication and set a "role" custom claim (see GUIDE_FIREBASE.md).
+      allow list: if request.auth != null;
+
+      // Submission of an application by a candidate: the mandatory personal
+      // details must be present, the status is forced to "en_attente" (pending:
+      // a candidate cannot self-approve or assign themselves an index number),
+      // AND the registration period set by the admin (document
+      // _config/inscriptions) must be open at the time of submission. This
+      // check is done HERE, on the server side: it applies even if the public
+      // form was altered or bypassed on the client side.
+      allow create: if request.auth != null
+        && request.resource.data.statut == 'en_attente'
+        && request.resource.data.numeroDossier == numeroDossier
+        && request.resource.data.nom is string && request.resource.data.nom.size() > 0
+        && request.resource.data.prenom is string && request.resource.data.prenom.size() > 0
+        && request.resource.data.dateNaissance is string && request.resource.data.dateNaissance.size() > 0
+        && request.resource.data.lieuNaissance is string && request.resource.data.lieuNaissance.size() > 0
+        && request.resource.data.genre in ['M', 'F', 'autre']
+        && request.resource.data.nationalite is string && request.resource.data.nationalite.size() > 0
+        && request.resource.data.email is string
+        && request.resource.data.telephone is string
+        && request.resource.data.niveau is int
+        && !('matricule' in request.resource.data)
+        && !('motDePasseProvisoire' in request.resource.data)
+        // A candidate who declares themselves a "former student" must provide
+        // their previous index number (the public form already makes it
+        // mandatory, but this server check applies even if the form was
+        // altered or bypassed on the client side).
+        && (
+          !('ancienEtudiant' in request.resource.data)
+          || request.resource.data.ancienEtudiant == false
+          || (
+            request.resource.data.ancienEtudiant == true
+            && request.resource.data.ancienMatricule is string
+            && request.resource.data.ancienMatricule.size() > 0
+          )
+        )
+        && (
+          !exists(/databases/$(database)/documents/_config/inscriptions)
+          || (
+            (
+              get(/databases/$(database)/documents/_config/inscriptions).data.debutAnnee == null
+              || request.time >= timestamp.date(
+                   get(/databases/$(database)/documents/_config/inscriptions).data.debutAnnee,
+                   get(/databases/$(database)/documents/_config/inscriptions).data.debutMois,
+                   get(/databases/$(database)/documents/_config/inscriptions).data.debutJour
+                 )
+            )
+            && (
+              get(/databases/$(database)/documents/_config/inscriptions).data.finAnnee == null
+              || request.time < timestamp.date(
+                   get(/databases/$(database)/documents/_config/inscriptions).data.finAnnee,
+                   get(/databases/$(database)/documents/_config/inscriptions).data.finMois,
+                   get(/databases/$(database)/documents/_config/inscriptions).data.finJour
+                 ) + duration.value(1, 'd')
+            )
+          )
+        );
+
+      // Processing an application (approval / rejection / deletion): DAAS space.
+      allow update, delete: if request.auth != null;
+    }
+
+    // ---- REST OF THE PLATFORM ----
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

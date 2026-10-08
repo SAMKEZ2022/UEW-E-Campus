@@ -1,0 +1,17 @@
+{
+  "name": "UEW E-Campus",
+  "short_name": "UEW E-Campus",
+  "description": "University of Education, Winneba e-learning platform: lectures, assignments, scores and messaging, usable with a weak connection or offline.",
+  "lang": "en",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F4F7FC",
+  "theme_color": "#0033A0",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

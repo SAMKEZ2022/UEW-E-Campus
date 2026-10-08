@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Registration | UEW E-Campus</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <meta name="theme-color" content="#0033A0">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <link rel="stylesheet" href="./style.css">
+    <!-- Mode hors-ligne / 2G : doit être chargé avant Firebase -->
+    <script src="./offline.js"></script>
+    <!-- Firebase (SDK compat, pas de build nécessaire) -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+    <script src="./firebase-config.js"></script>
+</head>
+<!-- data-public="true" : page accessible SANS compte (candidats externes). -->
+<body class="public-body" data-public="true">
+
+    <header class="public-header">
+        <img src="./logo.png" alt="UEW logo" class="public-logo">
+        <div>
+            <h1>Online Registration</h1>
+            <p>University of Education, Winneba — E-Campus</p>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <section>
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Registration application form</h3>
+            <p class="info-public">
+                Fill in this form to submit your application. An <b>application number</b> will be given to you immediately: keep it, as it lets you track your application and retrieve your login details once your registration is approved. Fields marked with a <span class="obligatoire">*</span> are required.
+            </p>
+
+            <div id="periodeInscriptionInfo"></div>
+
+            <form id="formInscription" novalidate>
+
+                <fieldset>
+                    <legend>Personal details</legend>
+                    <div class="form-grid">
+                        <label>Last name <span class="obligatoire">*</span>
+                            <input type="text" id="insNom" placeholder="e.g. MENSAH" autocomplete="family-name">
+                        </label>
+                        <label>First name(s) <span class="obligatoire">*</span>
+                            <input type="text" id="insPrenom" placeholder="e.g. Kofi Elom" autocomplete="given-name">
+                        </label>
+                        <label>Date of birth <span class="obligatoire">*</span>
+                            <input type="date" id="insDateNaissance" autocomplete="bday">
+                        </label>
+                        <label>Place of birth <span class="obligatoire">*</span>
+                            <input type="text" id="insLieuNaissance" placeholder="e.g. Winneba, Ghana">
+                        </label>
+                        <label>Gender <span class="obligatoire">*</span>
+                            <select id="insGenre">
+                                <option value="">-- Choose --</option>
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                                <option value="autre">Other / not specified</option>
+                            </select>
+                        </label>
+                        <label>Nationality <span class="obligatoire">*</span>
+                            <input type="text" id="insNationalite" placeholder="e.g. Ghanaian">
+                        </label>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>ID document <small>(optional)</small></legend>
+                    <p class="info-public">
+                        If you do not have an ID document yet, leave these two fields empty: your application remains valid and the document can be provided to the administration later.
+                    </p>
+                    <div class="form-grid">
+                        <label>Document type
+                            <select id="insTypePiece">
+                                <option value="">-- No document --</option>
+                                <option value="cni">Ghana Card / National ID</option>
+                                <option value="passeport">Passport</option>
+                                <option value="carte_consulaire">Consular card</option>
+                                <option value="extrait_naissance">Birth certificate</option>
+                                <option value="autre">Other document</option>
+                            </select>
+                        </label>
+                        <label>Document number
+                            <input type="text" id="insNumeroPiece" placeholder="e.g. GHA-123456789-0">
+                        </label>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Contact</legend>
+                    <div class="form-grid">
+                        <label>Personal email <span class="obligatoire">*</span>
+                            <input type="email" id="insEmail" placeholder="e.g. kofi.mensah@gmail.com" autocomplete="email">
+                        </label>
+                        <label>Phone <span class="obligatoire">*</span>
+                            <input type="tel" id="insTelephone" placeholder="e.g. +233 24 000 0000" autocomplete="tel">
+                        </label>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Applicant status</legend>
+                    <div class="form-grid">
+                        <label>You are <span class="obligatoire">*</span>
+                            <span class="checkbox-group" style="display:flex; gap:16px;">
+                                <label class="checkbox-item"><input type="radio" name="insTypeCandidat" value="nouveau" checked onchange="toggleAncienMatriculeInscription()"> New applicant</label>
+                                <label class="checkbox-item"><input type="radio" name="insTypeCandidat" value="ancien" onchange="toggleAncienMatriculeInscription()"> Former UEW student</label>
+                            </span>
+                        </label>
+                        <label id="wrapperAncienMatricule" style="display:none;">Your previous index number <span class="obligatoire">*</span>
+                            <input type="text" id="insAncienMatricule" placeholder="e.g. UEW-2023-0042">
+                        </label>
+                    </div>
+                    <p class="info-public" id="infoAncienMatricule" style="display:none;">
+                        This number lets us find your academic record: courses you have already passed will not be offered to you again.
+                    </p>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Preferred programme</legend>
+                    <div class="form-grid">
+                        <label>Department <span class="obligatoire">*</span>
+                            <select id="insFiliere"></select>
+                        </label>
+                        <label>Level <span class="obligatoire">*</span>
+                            <select id="insNiveau"></select>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <p id="inscriptionErreur" class="error"></p>
+                <button type="submit">Submit my registration application</button>
+            </form>
+
+            <div id="inscriptionConfirmation"></div>
+        </section>
+
+        <section>
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Track my application</h3>
+            <p class="info-public">
+                Enter your application number and your date of birth to see the status of your application and, if approved, retrieve your UEW E-Campus login details.
+            </p>
+            <form id="formSuiviInscription">
+                <div class="form-grid">
+                    <label>Application no.
+                        <input type="text" id="suiviNumero" placeholder="e.g. UEW-REG-2026-4F7K2P9X">
+                    </label>
+                    <label>Date of birth
+                        <input type="date" id="suiviDateNaissance">
+                    </label>
+                </div>
+                <button type="submit" class="btn-secondary">View my application</button>
+            </form>
+            <div id="suiviResultat"></div>
+        </section>
+
+        <p class="info-public" style="text-align:center;">
+            Already have an account? <a href="index.html">Log in to UEW E-Campus</a>
+        </p>
+
+    </div>
+
+    <script src="./script.js"></script>
+    <script>
+        // Le champ "Ancien n° matricule" n'apparaît (et n'est obligatoire) que
+        // si le candidat se déclare ancien étudiant de l'UEW.
+        function toggleAncienMatriculeInscription() {
+            const ancien = document.querySelector('input[name="insTypeCandidat"]:checked').value === 'ancien';
+            const wrapper = document.getElementById('wrapperAncienMatricule');
+            const info = document.getElementById('infoAncienMatricule');
+            const input = document.getElementById('insAncienMatricule');
+            wrapper.style.display = ancien ? 'block' : 'none';
+            info.style.display = ancien ? 'block' : 'none';
+            input.required = ancien;
+            if (!ancien) input.value = '';
+        }
+    </script>
+</body>
+</html>

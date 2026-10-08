@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UEW E-Campus | Login</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <meta name="theme-color" content="#0033A0">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <link rel="stylesheet" href="./style.css">
+    <!-- Mode hors-ligne / 2G : doit être chargé avant Firebase -->
+    <script src="./offline.js"></script>
+    <!-- Firebase (SDK compat, pas de build nécessaire) -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+    <script src="./firebase-config.js"></script>
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <img src="./logo.png" alt="UEW logo" class="logo-login">
+        <h2>University of Education, Winneba</h2>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Log In</button>
+            <p id="error" class="error"></p>
+        </form>
+        <p class="lien-inscription">
+            Not yet a UEW student?<br>
+            <a href="registration.html">Submit an online registration application</a>
+        </p>
+        <p class="info" id="comptesTest" style="display:none;">
+            <b>Test accounts:</b><br>
+            Admin: admin@uew-ecampus.edu.gh / Uew2026#Admin <br>
+            DAAS: daas@uew-ecampus.edu.gh / Uew2026#Daas <br>
+            Examinations Office: exams@uew-ecampus.edu.gh / Uew2026#Exams <br>
+            Lecturer (ICT): lecturer.ict@uew-ecampus.edu.gh / Uew2026#LecICT <br>
+            Student (Accounting &amp; Finance): student.accounting@uew-ecampus.edu.gh / Uew2026#StuAcc
+        </p>
+    </div>
+    <script>
+        // Les comptes de démonstration ne s'affichent qu'en local (ou avec ?demo=1) :
+        // ils ne doivent jamais être lisibles publiquement une fois le site en ligne.
+        if (['localhost', '127.0.0.1'].includes(location.hostname) || /[?&]demo=1/.test(location.search)) {
+            document.getElementById('comptesTest').style.display = '';
+        }
+    </script>
+    <script src="./script.js"></script>
+</body>
+</html>

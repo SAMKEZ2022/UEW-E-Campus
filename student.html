@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UEW E-Campus | Student Portal</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <meta name="theme-color" content="#0033A0">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <link rel="stylesheet" href="./style.css">
+    <!-- Mode hors-ligne / 2G : doit être chargé avant Firebase -->
+    <script src="./offline.js"></script>
+    <!-- Firebase (SDK compat, pas de build nécessaire) -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+    <script src="./firebase-config.js"></script>
+    <!-- SheetJS : génère le bulletin de notes (.xlsx) directement dans le navigateur -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body class="theme-etudiant">
+    <header>
+        <div class="header-brand">
+            <img src="./logo-icon.png" alt="UEW logo" class="logo-header">
+            <h1>🎓 Student Portal</h1>
+        </div>
+        <button class="btn-logout">Log out</button>
+    </header>
+    <nav class="topnav">
+        <div class="topnav-tab actif" data-tab="accueil">Home</div>
+        <div class="topnav-tab" data-tab="dashboard">Dashboard</div>
+        <div class="topnav-tab" data-tab="cours">My lectures</div>
+    </nav>
+    <div id="liveBanner"></div>
+    <div class="container">
+
+        <section class="tab-page actif" data-tab="accueil">
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Lectures Live Now</h3>
+            <div id="listeCours"></div>
+        </section>
+
+        <section class="tab-page" data-tab="dashboard">
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">My Class</h3>
+            <div id="listeClasseEtudiant"></div>
+
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">My Scores</h3>
+            <div id="listeNotesEtudiant"></div>
+            <button type="button" onclick="exporterMesNotesExcel()" class="btn-success" id="btnTelechargerMesNotes" style="display:none;">Download my transcript (.xlsx)</button>
+
+            
+
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">My Assignments</h3>
+            <div id="listeDevoirsEtudiant"></div>
+        </section>
+
+        <section class="tab-page" data-tab="cours">
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Upcoming Lectures</h3>
+            <div id="listeProchainsCours"></div>
+
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Course Materials</h3>
+            <div id="listeSupportsEtudiant"></div>
+
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Submit Work</h3>
+            <form id="formDepot">
+                <select id="depotDevoir" required></select>
+                <div class="checkbox-group">
+                    <p>Submission type:</p>
+                    <label class="checkbox-item"><input type="radio" name="depotType" value="fichier" checked> File (PDF, Word...)</label>
+                    <label class="checkbox-item"><input type="radio" name="depotType" value="lien"> Google Drive link</label>
+                </div>
+                <input type="file" id="depotFile" required>
+                <input type="url" id="depotLien" placeholder="https://drive.google.com/..." style="display:none;">
+                <small class="info" style="display:block; margin:-6px 0 10px;">For a Drive link: set sharing to "Anyone with the link can view", otherwise your lecturer will not be able to open it.</small>
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+
+    </div>
+    <!-- MESSAGERIE FLOTTANTE : bouton rond + fenêtre déplaçable, visible sur tous les onglets -->
+    <button type="button" id="chatFab" class="chat-fab" aria-label="Open messages">💬<span id="chatFabBadge" class="chat-fab-badge" style="display:none;"></span></button>
+    <div id="chatFlottant" class="chat-flottant" data-titre="Messages (my lecturers)" hidden>
+        <div class="chat-flottant-barre" id="chatBarre">
+            <button type="button" id="chatRetour" class="chat-retour" aria-label="Back to contacts">&larr;</button>
+            <span id="chatTitre">Messages (my lecturers)</span>
+            <button type="button" id="chatReduire" aria-label="Minimise messages">&minus;</button>
+        </div>
+        <div class="chat-container">
+            <div class="chat-contacts" id="chatContacts"></div>
+            <div class="chat-panel">
+                <div class="chat-header" id="chatHeader">Select a lecturer to chat</div>
+                <div class="chat-messages" id="chatMessages"></div>
+                <form id="formChat" class="chat-form" style="display:none;">
+                    <input type="text" id="chatInput" placeholder="Write a message..." autocomplete="off" required>
+                    <button type="submit">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="./script.js"></script>
+</body>
+</html>

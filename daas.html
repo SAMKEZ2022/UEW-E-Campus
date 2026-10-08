@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UEW E-Campus | DAAS</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <meta name="theme-color" content="#0033A0">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <link rel="stylesheet" href="./style.css">
+    <!-- Mode hors-ligne / 2G : doit être chargé avant Firebase -->
+    <script src="./offline.js"></script>
+    <!-- Firebase (SDK compat, pas de build nécessaire) -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+    <script src="./firebase-config.js"></script>
+    <!-- SheetJS : génère et lit les fichiers .xlsx directement dans le navigateur -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body class="theme-daas">
+    <header>
+        <div class="header-brand">
+            <img src="./logo-icon.png" alt="UEW logo" class="logo-header">
+            <h1>DAAS — Academic Affairs &amp; Registry</h1>
+        </div>
+        <button class="btn-logout">Log out</button>
+    </header>
+    <nav class="topnav">
+        <div class="topnav-tab actif" data-tab="accueil">Home</div>
+        <div class="topnav-tab" data-tab="inscriptions">Online registrations</div>
+    </nav>
+    <div class="container">
+
+        <section class="tab-page actif" data-tab="accueil">
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Welcome</h3>
+            <div class="stats-grid">
+                <div class="stat-box"><div class="stat-value" id="totalInscriptions">0</div><div class="stat-label">Pending registrations</div></div>
+            </div>
+            <div class="card">
+                <p>This space lets you manage the online registration applications submitted by applicants on the public portal <a href="registration.html" target="_blank">registration.html</a> : approving or rejecting applications, setting the registration period, and exporting the list of applications.</p>
+                <p>When an application is approved, the student account is created automatically (login email, temporary password and index number generated), and the applicant finds the login details when tracking their application.</p>
+            </div>
+        </section>
+
+        <section class="tab-page" data-tab="inscriptions">
+            <h3><img src="./logo-icon.png" class="icon-logo" alt="">Online registrations</h3>
+            <p>Applications submitted by applicants from the public portal
+            <a href="registration.html" target="_blank">registration.html</a>. On approval, the student account is created automatically (login email, temporary password and index number generated), and the applicant finds the login details when tracking their application.</p>
+
+            <div class="card">
+                <p><b>Registration period</b></p>
+                <p>Outside this period, the public form shows a refusal message and accepts no new application. Leave a date empty to set no limit on that side (e.g. leave the end date empty for registration open until further notice).</p>
+                <div id="periodeAdminStatut"></div>
+                <label>Start date
+                    <input type="date" id="periodeAdminDebut">
+                </label>
+                <label>End date
+                    <input type="date" id="periodeAdminFin">
+                </label>
+                <button type="button" onclick="enregistrerPeriodeInscription()">Save period</button>
+            </div>
+
+            <div class="card">
+                <p id="compteurInscriptions">Loading applications...</p>
+                <select id="filtreInscriptions" onchange="changerFiltreInscriptions(this.value)">
+                    <option value="en_attente">Pending review</option>
+                    <option value="validee">Approved</option>
+                    <option value="refusee">Rejected</option>
+                    <option value="">All applications</option>
+                </select>
+                <button type="button" onclick="exporterInscriptionsExcel()" class="btn-success">Export list (.xlsx)</button>
+            </div>
+
+            <div id="listeInscriptions"></div>
+        </section>
+
+    </div>
+    <script src="./script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            chargerPeriodeInscriptionAdmin();
+        });
+    </script>
+</body>
+</html>
